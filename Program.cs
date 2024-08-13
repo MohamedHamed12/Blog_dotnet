@@ -1,9 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using Infrastructure.Data;
+using Infrastructure.Repositories;
+using Core.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add services to the container.
+builder.Services.AddControllers();
+
+// Add DbContext with SQLite
+builder.Services.AddDbContext<BlogDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
@@ -15,6 +28,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
+
 
 var summaries = new[]
 {
