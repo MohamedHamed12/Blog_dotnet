@@ -21,7 +21,15 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Post>> GetAllAsync()
         {
-            return await _context.Posts.Include(p => p.Author).Include(p => p.Category).ToListAsync();
+            var posts = await _context.Posts.Include(p => p.Author).Include(p => p.Category).ToListAsync();
+            // print all posts
+            var len = posts.Count();
+            Console.WriteLine("****************Number of posts in the database: " + len);
+            foreach (var post in posts)  
+            {
+                Console.WriteLine(post);
+            }
+            return posts; 
         }
 
         public async Task AddAsync(Post post)

@@ -29,3 +29,6 @@ dotnet ef migrations add InitialCreate --output-dir Infrastructure/Migrations
 dotnet ef database update
 
 
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package Microsoft.IdentityModel.Tokens
+dotnet add package System.IdentityModel.Tokens.Jwt
