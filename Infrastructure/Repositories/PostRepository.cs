@@ -2,6 +2,7 @@ using Core.Entities;
 using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Data;
+using BlogBackend.Core.Specifications;
 
 namespace Infrastructure.Repositories
 {
@@ -19,7 +20,7 @@ namespace Infrastructure.Repositories
             return await _context.Posts.Include(p => p.Author).Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Post>> GetAllAsync()
+        public async Task<IEnumerable<Post>> GetAllAsync(PostSpecification spec)
         {
             var posts = await _context.Posts.Include(p => p.Author).Include(p => p.Category).ToListAsync();
             // print all posts

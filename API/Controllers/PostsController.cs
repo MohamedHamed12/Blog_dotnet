@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Core.Entities;
 using Core.Interfaces;
+using BlogBackend.API.DTOs;
+using BlogBackend.Core.Specifications;
 
 namespace API.Controllers
 {
@@ -16,10 +18,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
+        public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] PostFilterDTO filter)
         {
-            var posts = await _postRepository.GetAllAsync();
+            var spec = new PostSpecification(filter);
+            var posts = await _postRepository.GetAllAsync(spec);
             return Ok(posts);
+
+            // var posts = await _postRepository.GetAllAsync();
+            // return Ok(posts);
         }
 
         [HttpGet("{id}")]

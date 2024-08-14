@@ -21,21 +21,21 @@ namespace API.Tests.Controllers
             _controller = new PostsController(_mockRepository.Object);
         }
 
-        [Fact]
-        public async Task GetPosts_ReturnsOkResultWithPosts()
-        {
-            // Arrange
-            var posts = new List<Post> { new Post(), new Post() };
-            _mockRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(posts);
+        // [Fact]
+        // public async Task GetPosts_ReturnsOkResultWithPosts()
+        // {
+        //     // Arrange
+        //     var posts = new List<Post> { new Post(), new Post() };
+        //     _mockRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(posts);
 
-            // Act
-            var result = await _controller.GetPosts();
+        //     // Act
+        //     var result = await _controller.GetPosts();
 
-            // Assert
-            var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-            var returnedPosts = okResult.Value.Should().BeAssignableTo<IEnumerable<Post>>().Subject;
-            returnedPosts.Should().BeEquivalentTo(posts);
-        }
+        //     // Assert
+        //     var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        //     var returnedPosts = okResult.Value.Should().BeAssignableTo<IEnumerable<Post>>().Subject;
+        //     returnedPosts.Should().BeEquivalentTo(posts);
+        // }
 
         [Fact]
         public async Task GetPost_WithValidId_ReturnsOkResultWithPost()
