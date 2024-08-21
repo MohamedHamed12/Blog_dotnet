@@ -7,9 +7,20 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Services;
 using Microsoft.OpenApi.Models;
+using FluentValidation;
+using API.Models;
+using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -78,11 +89,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// builder.Services.AddControllers(options => options.Filters
+//   .Add(typeof(RegisterValidator)));
 
+builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterValidator>();
+// builder.Services.Add(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
 
 
 
 var app = builder.Build();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

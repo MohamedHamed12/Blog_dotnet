@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using System.Text;
 
 using System.Security.Cryptography;
+using System.Net;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using FluentValidation;
 
 namespace API.Controllers
 {
@@ -18,10 +22,16 @@ namespace API.Controllers
         private readonly IUserRepository _userRepository;
         private readonly TokenService _tokenService;
 
-        public AuthController(IUserRepository userRepository, TokenService tokenService)
+        private readonly BlogDbContext _context;
+
+         
+        public AuthController(BlogDbContext context, IUserRepository userRepository, TokenService tokenService)
         {
+            _context = context;
             _userRepository = userRepository;
             _tokenService = tokenService;
+
+
         }
 
         [HttpPost("register")]
@@ -29,7 +39,12 @@ namespace API.Controllers
         {
             if (await _userRepository.UserExistsAsync(request.Username, request.Email))
             {
-                return BadRequest("Username or email already taken.");
+                // Console.WriteLine("*******************"+request.Username);
+                // return BadRequest("Username or email already taken.");
+                // throw new BadRequestException("Username or email already taken.");
+                throw new ApiException(HttpStatusCode.BadRequest, "Username or email already taken.");
+
+
             }
 
             var user = new User
@@ -41,19 +56,23 @@ namespace API.Controllers
             };
 
             await _userRepository.AddUserAsync(user);
-            return Ok("User registered successfully.");
+            var response = new { Success = true, Message = "User created successfully" };
+            return Ok(response);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequest request)
         {
-            var user = await _userRepository.GetByUsernameAsync(request.Username);
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
 
-            if (user == null || !VerifyPassword(request.Password, user.Password))
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
-                return Unauthorized("Invalid username or password.");
-            }
+                // return Unauthorized("Invalid username or password.");
+                Console.WriteLine("*********not pass**********" + request.Password);
+                throw new ApiException(HttpStatusCode.Unauthorized, "Invalid username or password.");
 
+            }
+            Console.WriteLine("*********pass**********" + user.Password);
             var (accessToken, refreshToken) = _tokenService.GenerateTokens(user);
 
             // Save refresh token and its expiry date to the database
