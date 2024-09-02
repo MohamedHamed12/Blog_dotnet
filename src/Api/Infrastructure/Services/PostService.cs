@@ -3,25 +3,39 @@ using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 
 public class PostService : IPostService
 {
     private readonly IRepository<Post> _repository;
     private readonly IMapper _mapper;
+    private readonly SieveProcessor _sieveProcessor;
 
-    public PostService(IRepository<Post> repository, IMapper mapper)
+    private readonly BlogDbContext _context;    
+    public PostService(IRepository<Post> repository, IMapper mapper,SieveProcessor sieveProcessor , BlogDbContext context)
     {
+
         _repository = repository;
         _mapper = mapper;
+        _sieveProcessor = sieveProcessor;
+        
+    
     }
+public async Task<IEnumerable<PostDto>> GetAllPostsAsync(SieveModel sieveModel)
+{
+    // var posts = await _repository.GetAllAsync();
+    var posts=_context.Posts.AsNoTracking();    
+    posts = _sieveProcessor.Apply(sieveModel,  posts);
+    
+    // Map to DTOs
+    return _mapper.Map<IEnumerable<PostDto>>(posts);
+}
 
-    public async Task<IEnumerable<PostDto>> GetAllPostsAsync()
-    {
-        var posts = await _repository.GetAllAsync();
-        return _mapper.Map<IEnumerable<PostDto>>(posts);
-    }
+ 
 
     public async Task<PostDto?> GetPostByIdAsync(Guid id)
     {

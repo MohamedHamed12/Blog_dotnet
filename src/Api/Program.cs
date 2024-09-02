@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sieve.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +94,9 @@ builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterValidator>();
 // builder.Services.Add(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
 
 
+builder.Services.AddScoped<SieveProcessor>();
+
+// builder.Services.AddSieve();
 
 var app = builder.Build();
 app.UseMiddleware<GlobalExceptionMiddleware>();

@@ -1,9 +1,11 @@
 using BlogBackend.API.DTOs;
-using BlogBackend.Core.Specifications;
+
 using Core.Entities;
 using Core.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
+using Sieve.Services;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -11,15 +13,16 @@ public class PostsController : ControllerBase
 {
     private readonly IPostService _postService;
 
-    public PostsController(IPostService postService)
+
+    public PostsController( IPostService postService)
     {
         _postService = postService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery]  SieveModel sieveModel)
     {
-        var posts = await _postService.GetAllPostsAsync();
+        var posts = await _postService.GetAllPostsAsync(sieveModel);
         return Ok(posts);
     }
 
