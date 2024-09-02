@@ -1,17 +1,17 @@
-using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+// using Infrastructure.Services;
+using API.Models;
+using BCrypt.Net;
 using Core.Entities;
 using Core.Interfaces;
-using Infrastructure.Services;
-using API.Models;
-using System;
-using System.Threading.Tasks;
-using System.Text;
-
-using System.Security.Cryptography;
-using System.Net;
-using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using FluentValidation;
+using Infrastructure.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -24,14 +24,15 @@ namespace API.Controllers
 
         private readonly BlogDbContext _context;
 
-         
-        public AuthController(BlogDbContext context, IUserRepository userRepository, TokenService tokenService)
+        public AuthController(
+            BlogDbContext context,
+            IUserRepository userRepository,
+            TokenService tokenService
+        )
         {
             _context = context;
             _userRepository = userRepository;
             _tokenService = tokenService;
-
-
         }
 
         [HttpPost("register")]
@@ -42,9 +43,10 @@ namespace API.Controllers
                 // Console.WriteLine("*******************"+request.Username);
                 // return BadRequest("Username or email already taken.");
                 // throw new BadRequestException("Username or email already taken.");
-                throw new ApiException(HttpStatusCode.BadRequest, "Username or email already taken.");
-
-
+                throw new ApiException(
+                    HttpStatusCode.BadRequest,
+                    "Username or email already taken."
+                );
             }
 
             var user = new User
@@ -52,7 +54,6 @@ namespace API.Controllers
                 Username = request.Username,
                 Email = request.Email,
                 Password = HashPassword(request.Password),
-
             };
 
             await _userRepository.AddUserAsync(user);
@@ -63,17 +64,22 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] AuthRequest request)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
-
+            var user = await _context.Users.SingleOrDefaultAsync(u =>
+                u.Username == request.Username
+            );
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password))
             {
                 // return Unauthorized("Invalid username or password.");
-                Console.WriteLine("*********not pass**********" + request.Password);
-                throw new ApiException(HttpStatusCode.Unauthorized, "Invalid username or password.");
-
+                throw new ApiException(
+                    HttpStatusCode.Unauthorized,
+                    "Invalid username or password."
+                );
             }
-            Console.WriteLine("*********pass**********" + user.Password);
-            var (accessToken, refreshToken) = _tokenService.GenerateTokens(user);
+            // var (accessToken, refreshToken) = _tokenService.GenerateTokens(user);
+            var (accessToken, refreshToken) = _tokenService.GenerateTokens(
+                user.Id.ToString(),
+                user.Username
+            );
 
             // Save refresh token and its expiry date to the database
             user.RefreshToken = refreshToken;
@@ -93,7 +99,11 @@ namespace API.Controllers
                 return Unauthorized("Invalid or expired refresh token.");
             }
 
-            var (accessToken, newRefreshToken) = _tokenService.GenerateTokens(user);
+            // var (accessToken, newRefreshToken) = _tokenService.GenerateTokens(user);
+            var (accessToken, newRefreshToken) = _tokenService.GenerateTokens(
+                user.Id.ToString(),
+                user.Username
+            );
 
             // Update refresh token in the database
             user.RefreshToken = newRefreshToken;
@@ -105,11 +115,12 @@ namespace API.Controllers
 
         private string HashPassword(string password)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-            }
+            // using (var sha256 = SHA256.Create())
+            // {
+            //     var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            //     return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            // }
+            return BCrypt.Net.BCrypt.HashPassword(password, BCrypt.Net.BCrypt.GenerateSalt());
         }
 
         private bool VerifyPassword(string password, string storedHash)

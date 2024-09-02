@@ -53,7 +53,7 @@ public class GlobalExceptionMiddleware
             return (apiEx.StatusCode, apiEx.Message);
         }
 
-        return (HttpStatusCode.InternalServerError, "An unexpected error occurred.");
+        return (HttpStatusCode.InternalServerError, "An unexpected error occurred."+ex.Message);
     }
 
     private Task HandleExceptionAsync(HttpStatusCode statusCode, string message,  HttpContext context,  object data = null)

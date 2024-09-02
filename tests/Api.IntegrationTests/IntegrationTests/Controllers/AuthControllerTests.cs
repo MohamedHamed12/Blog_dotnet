@@ -60,7 +60,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
     public async Task Register_ShouldReturnBadValidation()
     {
 
-        Console.WriteLine("*********vaild**********");
+        // Console.WriteLine("*********vaild**********");
         // Arrange
         var registerRequest = new RegisterRequest
         {
@@ -75,7 +75,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
         // Assert
         // response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
         var responseContent = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("*********vaild**********"+responseContent);
+        // Console.WriteLine("*********vaild**********"+responseContent);
         // var responseObject = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
         // responseObject.Should().ContainKey("success");
         // // responseObject["success"].Should().Be(true);
@@ -92,7 +92,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
         {
             Username = "existinguser",
             Email = "existinguser@example.com",
-            Password = "StrongPassword123"
+            Password = "CorrectPassword"
         };
 
         // Pre-seed user in the database (or assume one exists)
@@ -103,7 +103,6 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
          response = await _client.PostAsJsonAsync("/api/auth/register", registerRequest);
         // print response 
         var res=await response.Content.ReadAsStringAsync();
-        Console.WriteLine("*******************"+res);
         // Assert
         response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
         var content = await response.Content.ReadAsStringAsync();
@@ -114,60 +113,47 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory<Pro
         // content.Should().Be("Username or email already taken.");
     }
 
-    // [Fact]
-    // public async Task Login_ShouldReturnOk_WithValidCredentials()
-    // {   
+    [Fact]
+    public async Task Login_ShouldReturnOk_WithValidCredentials()
+    {   
 
 
-    //      var registerRequest = new RegisterRequest
-    //     {
-    //         Username = "existinguser",
-    //         Email = "existinguser@example.com",
-    //         Password = "CorrectPassword"
-    //     };
 
-    //     // Act
-    //     var response = await _client.PostAsJsonAsync("/api/auth/register", registerRequest);
-    //     response.StatusCode.Should().Be(System.Net.HttpStatusCode.BadRequest);
+        // Arrange
+        var authRequest = new AuthRequest
+        {
+            Username = "existinguser",
+            Password = "CorrectPassword"
+        };
 
-    //     // Arrange
-    //     var authRequest = new AuthRequest
-    //     {
-    //         Username = "existinguser",
-    //         Password = "CorrectPassword"
-    //     };
+        // Act
+         var response = await _client.PostAsJsonAsync("/api/auth/login", authRequest);
+         var content = await response.Content.ReadAsStringAsync();
 
-    //     // Act
-    //      response = await _client.PostAsJsonAsync("/api/auth/login", authRequest);
-    //      var content = await response.Content.ReadAsStringAsync();
-    //     Console.WriteLine("*******************"+content);
+        // Assert
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
+        
+    }
 
-    //     // Assert
-    //     response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
-    //     // var tokens = await response.Content.ReadFromJsonAsync<TokenResponse>();
-    //     // tokens.Should().NotBeNull();
-    //     // tokens!.AccessToken.Should().NotBeNullOrEmpty();
-    //     // tokens.RefreshToken.Should().NotBeNullOrEmpty();
-    // }
+    [Fact]
+    public async Task Login_ShouldReturnUnauthorized_WithInvalidCredentials()
+    {
+        // Arrange
+        var authRequest = new AuthRequest
+        {
+            Username = "existinguser",
+            Password = "WrongPassword"
+        };
 
-//     [Fact]
-//     public async Task Login_ShouldReturnUnauthorized_WithInvalidCredentials()
-//     {
-//         // Arrange
-//         var authRequest = new AuthRequest
-//         {
-//             Username = "existinguser",
-//             Password = "WrongPassword"
-//         };
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/auth/login", authRequest);
 
-//         // Act
-//         var response = await _client.PostAsJsonAsync("/api/auth/login", authRequest);
+        // Assert
+        response.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
+        // var content = await response.Content.ReadAsStringAsync();
 
-//         // Assert
-//         response.StatusCode.Should().Be(System.Net.HttpStatusCode.Unauthorized);
-//         var content = await response.Content.ReadAsStringAsync();
-//         content.Should().Be("Invalid username or password.");
-//     }
+        // content.Should().Be("Invalid username or password.");
+    }
 
 //     // [Fact]
 //     // public async Task RefreshToken_ShouldReturnOk_WithValidToken()

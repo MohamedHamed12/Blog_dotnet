@@ -1,70 +1,56 @@
-using Microsoft.AspNetCore.Mvc;
-using Core.Entities;
-using Core.Interfaces;
 using BlogBackend.API.DTOs;
 using BlogBackend.Core.Specifications;
+using Core.Entities;
+using Core.Interfaces;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class PostsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PostsController : ControllerBase
+    private readonly IPostService _postService;
+
+    public PostsController(IPostService postService)
     {
-        private readonly IPostRepository _postRepository;
+        _postService = postService;
+    }
 
-        public PostsController(IPostRepository postRepository)
-        {
-            _postRepository = postRepository;
-        }
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var posts = await _postService.GetAllPostsAsync();
+        return Ok(posts);
+    }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPosts([FromQuery] PostFilterDTO filter)
-        {
-            var spec = new PostSpecification(filter);
-            var posts = await _postRepository.GetAllAsync(spec);
-            return Ok(posts);
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var post = await _postService.GetPostByIdAsync(id);
+        if (post == null)
+            return NotFound();
 
-            // var posts = await _postRepository.GetAllAsync();
-            // return Ok(posts);
-        }
+        return Ok(post);
+    }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Post>> GetPost(int id)
-        {
-            var post = await _postRepository.GetByIdAsync(id);
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] PostDto postDto)
+    {
+        var id = await _postService.CreatePostAsync(postDto);
+        return CreatedAtAction(nameof(GetById), new { id }, postDto);
+    }
 
-            if (post == null)
-            {
-                return NotFound();
-            }
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] PostDto postDto)
+    {
+        await _postService.UpdatePostAsync(id, postDto);
+        return NoContent();
+    }
 
-            return Ok(post);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<Post>> CreatePost(Post post)
-        {
-            await _postRepository.AddAsync(post);
-            return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePost(int id, Post post)
-        {
-            if (id != post.Id)
-            {
-                return BadRequest();
-            }
-
-            await _postRepository.UpdateAsync(post);
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePost(int id)
-        {
-            await _postRepository.DeleteAsync(id);
-            return NoContent();
-        }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _postService.DeletePostAsync(id);
+        return NoContent();
     }
 }
