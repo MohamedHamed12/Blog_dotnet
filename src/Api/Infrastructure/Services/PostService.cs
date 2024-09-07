@@ -2,7 +2,6 @@ using API;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
-using Core.Interfaces;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,27 +14,44 @@ public class PostService : IPostService
     private readonly IMapper _mapper;
     private readonly SieveProcessor _sieveProcessor;
 
-    private readonly BlogDbContext _context;    
-    public PostService(IRepository<Post> repository, IMapper mapper,SieveProcessor sieveProcessor , BlogDbContext context)
-    {
+    private readonly BlogDbContext _context;
 
+    public PostService(
+        IRepository<Post> repository,
+        IMapper mapper,
+        SieveProcessor sieveProcessor,
+        BlogDbContext context
+    )
+    {
         _repository = repository;
         _mapper = mapper;
         _sieveProcessor = sieveProcessor;
-        
-    
+        _context = context;
     }
-public async Task<IEnumerable<PostDto>> GetAllPostsAsync(SieveModel sieveModel)
-{
-    // var posts = await _repository.GetAllAsync();
-    var posts=_context.Posts.AsNoTracking();    
-    posts = _sieveProcessor.Apply(sieveModel,  posts);
-    
-    // Map to DTOs
-    return _mapper.Map<IEnumerable<PostDto>>(posts);
-}
 
- 
+    public async Task<PagedResult<PostDto>> GetAllPostsAsync(SieveModel sieveModel)
+    {
+        var postsQuery = _context.Posts.AsNoTracking();
+        var totalCount = await postsQuery.CountAsync();
+
+        // Apply Sieve filters, sorting, and pagination
+        postsQuery = _sieveProcessor.Apply(sieveModel, postsQuery, applyPagination: false);
+
+        // Pagination
+        var pagedPosts = await _sieveProcessor
+            .Apply(sieveModel, postsQuery, applyPagination: true)
+            .ToListAsync();
+
+        var postDtos = _mapper.Map<IEnumerable<PostDto>>(pagedPosts);
+
+        return new PagedResult<PostDto>
+        {
+            Data = postDtos,
+            TotalCount = totalCount,
+            PageNumber = sieveModel?.Page ?? 1,
+            PageSize = sieveModel?.PageSize ?? totalCount,
+        };
+    }
 
     public async Task<PostDto?> GetPostByIdAsync(Guid id)
     {

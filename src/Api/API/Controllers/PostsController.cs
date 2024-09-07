@@ -1,5 +1,4 @@
 using BlogBackend.API.DTOs;
-
 using Core.Entities;
 using Core.Interfaces;
 using MediatR;
@@ -13,15 +12,16 @@ public class PostsController : ControllerBase
 {
     private readonly IPostService _postService;
 
-
-    public PostsController( IPostService postService)
+    public PostsController(IPostService postService)
     {
         _postService = postService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery]  SieveModel sieveModel)
+    public async Task<ActionResult<IEnumerable<PostDto>>> GetAll([FromQuery] SieveModel sieveModel)
     {
+        // debug
+        Console.WriteLine("********GetAllPostsAsync");
         var posts = await _postService.GetAllPostsAsync(sieveModel);
         return Ok(posts);
     }
