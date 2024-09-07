@@ -18,10 +18,8 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PostDto>>> GetAll([FromQuery] SieveModel sieveModel)
+    public async Task<ActionResult<PagedResult<PostDto>>> GetAll([FromQuery] SieveModel sieveModel)
     {
-        // debug
-        Console.WriteLine("********GetAllPostsAsync");
         var posts = await _postService.GetAllPostsAsync(sieveModel);
         return Ok(posts);
     }
