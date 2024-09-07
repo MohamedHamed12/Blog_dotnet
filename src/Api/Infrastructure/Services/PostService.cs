@@ -28,9 +28,7 @@ public class PostService : IPostService
         _sieveProcessor = sieveProcessor;
         _context = context;
     }
-public async Task<PagedResult<PostDto>> GetAllPostsAsync(SieveModel sieveModel)
-
-    // public async Task<PagedResult<PostDto>> GetAllPostsAsync(SieveModel sieveModel)
+    public async Task<PagedResult<PostDto>> GetAllPostsAsync(SieveModel sieveModel)
     {
         var postsQuery = _context.Posts.AsNoTracking();
         var totalCount = await postsQuery.CountAsync();
