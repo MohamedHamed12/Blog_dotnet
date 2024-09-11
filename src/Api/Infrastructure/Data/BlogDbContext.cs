@@ -1,4 +1,3 @@
-using Core.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +11,6 @@ namespace Infrastructure.Data
         public DbSet<Post> Posts { get; set; }
 
         // public DbSet<Author> Authors { get; set; }
-        public DbSet<Category> Categories { get; set; }
 
         // public DbSet<User> Users { get; set; }
 
