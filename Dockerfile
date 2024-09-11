@@ -7,13 +7,15 @@ WORKDIR /app
 
 # Copy the solution file and project files
 COPY blog.sln ./
-COPY src/Api/Api.csproj ./src/Api/
 
-# Restore dependencies
+# Copy all project files
+COPY src/Api.IntegrationTests/Api.IntegrationTests.csproj ./src/Api.IntegrationTests/
+
+# Restore dependencies for the entire solution
 RUN dotnet restore
 
 # Copy the entire source code
-COPY . .
+COPY src ./src
 
 # Build the application
 RUN dotnet publish src/Api/Api.csproj -c Release -o /out
@@ -31,4 +33,3 @@ EXPOSE 80
 
 # Set the entrypoint to run your application
 ENTRYPOINT ["dotnet", "Api.dll"]
-
