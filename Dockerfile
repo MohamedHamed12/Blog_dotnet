@@ -40,14 +40,16 @@ WORKDIR /source
 # copy csproj and restore as distinct layers
 COPY ["src/Api/Api.csproj", "Api/"]
 
-RUN dotnet restore -a $TARGETARCH
+# RUN dotnet restore -a $TARGETARCH
+RUN dotnet restore "Api/Api.csproj"
 
 # copy everything else and build app
 
 
 COPY . .
 
-RUN dotnet publish -a $TARGETARCH --no-restore -o /app
+# RUN dotnet publish -a $TARGETARCH --no-restore -o /app
+RUN dotnet publish "Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 
 # final stage/image
