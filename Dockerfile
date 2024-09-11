@@ -5,17 +5,19 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the solution file and project files
+# Copy the solution file
 COPY blog.sln ./
 
-# Copy all project files
-COPY src/Api.IntegrationTests/Api.IntegrationTests.csproj ./src/Api.IntegrationTests/
+# Copy the project files
+COPY src/Api/Api.csproj src/Api/
+COPY tests/Api.IntegrationTests/Api.IntegrationTests.csproj tests/Api.IntegrationTests/
 
 # Restore dependencies for the entire solution
 RUN dotnet restore
 
 # Copy the entire source code
 COPY src ./src
+COPY tests ./tests
 
 # Build the application
 RUN dotnet publish src/Api/Api.csproj -c Release -o /out
