@@ -57,8 +57,9 @@ app.MapGet(
     )
     .WithName("GetWeatherForecast")
     .WithOpenApi();
+app.Run("http://0.0.0.0:8000");
 
-app.Run("http://localhost:8000"); // Change port here
+// app.Run("http://localhost:8000"); // Change port here
 // app.Run();
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
