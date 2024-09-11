@@ -59,7 +59,7 @@ app.MapGet(
     .WithOpenApi();
 
 // app.Run("http://localhost:8000"); // Change port here
-
+app.Run();
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
