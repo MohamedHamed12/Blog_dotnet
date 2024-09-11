@@ -84,7 +84,8 @@ RUN dotnet restore src/Api/Api.csproj
 
 # Copy the rest of the source code
 COPY src/ src/
-
+# Debugging: List files to ensure Api.csproj exists
+RUN ls -la /src/Api
 # Build the app
 WORKDIR /src/Api
 RUN dotnet build Api.csproj -c Release -o /app/build
