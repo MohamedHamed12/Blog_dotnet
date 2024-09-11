@@ -113,4 +113,4 @@ EXPOSE 8080
 WORKDIR /app
 COPY --from=build /app .
 USER $APP_UID
-ENTRYPOINT ["./aspnetapp"]
+ENTRYPOINT ["./src/Api"]
