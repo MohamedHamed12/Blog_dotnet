@@ -12,12 +12,7 @@ builder.Services.AddCustomServices(builder.Configuration);
 builder.Services.AddCustomFluentValidation();
 
 var app = builder.Build();
-// Apply migrations
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<BlogDbContext>();
-    dbContext.Database.Migrate();
-}
+
 // Configure the HTTP request pipeline using extension methods
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
