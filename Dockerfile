@@ -1,17 +1,26 @@
- Use the official .NET Core runtime as the base image
-FROM mcr.microsoft.com/dotnet/runtime:5.0 AS base
+
+
+
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
 WORKDIR /app
-# Use the official .NET Core SDK as the build image
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR /src/Api
-COPY ["Api.csproj", "./"]
-RUN dotnet restore "./Api.csproj"
+EXPOSE 8080
+EXPOSE 8081
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Api/Api.csproj", "Api/"]
+RUN dotnet restore "./Api/Api.csproj"
 COPY . .
 WORKDIR "/src/Api"
-RUN dotnet build "Api.csproj" -c Release -o /app/build
+RUN dotnet build "./Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
 FROM build AS publish
-RUN dotnet publish "Api.csproj" -c Release -o /app/publish
-# Build the final image using the base image and the published output
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
