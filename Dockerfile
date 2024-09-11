@@ -7,10 +7,10 @@ FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS base
 
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+# EXPOSE 8080
+# EXPOSE 8081
+# EXPOSE 80
 EXPOSE 8000
-EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
