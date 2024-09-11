@@ -52,5 +52,5 @@ jobs:
 
     - name: Push Docker image to Docker Hub
       run: |
-        docker push your_dockerhub_username/blog_dotnet:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/blog_dotnet:latest
 
