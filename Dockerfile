@@ -102,7 +102,6 @@ COPY src/Api/*.csproj ./Api/
 RUN dotnet restore -a $TARGETARCH
 
 # copy everything else and build app
-COPY aspnetapp/. .
 COPY src/Api/. ./Api/
 
 RUN dotnet publish -a $TARGETARCH --no-restore -o /app
