@@ -42,7 +42,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t your_dockerhub_username/blog_dotnet:latest .
+        docker build -t ${ secrets.DOCKER_USERNAME }}/blog_dotnet:latest .
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
