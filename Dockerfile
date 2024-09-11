@@ -66,21 +66,52 @@
 # https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
 
 # Build stage
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# ARG TARGETARCH
+# WORKDIR /source
+
+# # Copy csproj and restore as distinct layers
+# COPY src/Api/*.csproj ./Api/
+# RUN dotnet restore ./Api/Api.csproj
+
+# # Copy and publish app and libraries
+# COPY src/Api/. ./Api/
+# RUN dotnet publish ./Api/Api.csproj -c Release -a $TARGETARCH --no-restore -o /app
+
+# # Final stage/image
+# FROM mcr.microsoft.com/dotnet/aspnet:8.0
+# EXPOSE 8080
+# WORKDIR /app
+# COPY --from=build /app .
+# ENTRYPOINT ["dotnet", "Api.dll"]
+
+
+
+
+
+
+# Learn about building .NET container images:
+# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
 ARG TARGETARCH
 WORKDIR /source
 
-# Copy csproj and restore as distinct layers
+# copy csproj and restore as distinct layers
 COPY src/Api/*.csproj ./Api/
-RUN dotnet restore ./Api/Api.csproj
 
-# Copy and publish app and libraries
+RUN dotnet restore -a $TARGETARCH
+
+# copy everything else and build app
+COPY aspnetapp/. .
 COPY src/Api/. ./Api/
-RUN dotnet publish ./Api/Api.csproj -c Release -a $TARGETARCH --no-restore -o /app
 
-# Final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+RUN dotnet publish -a $TARGETARCH --no-restore -o /app
+
+
+# final stage/image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy
 EXPOSE 8080
 WORKDIR /app
 COPY --from=build /app .
-ENTRYPOINT ["dotnet", "Api.dll"]
+USER $APP_UID
+ENTRYPOINT ["./aspnetapp"]
