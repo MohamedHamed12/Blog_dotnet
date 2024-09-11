@@ -1,4 +1,3 @@
-using Core.Entities;
 using Core.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

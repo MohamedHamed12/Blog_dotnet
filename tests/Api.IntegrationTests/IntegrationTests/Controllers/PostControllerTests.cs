@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using API;
 using API.Models;
-using Core.Entities;
 using FluentAssertions;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
