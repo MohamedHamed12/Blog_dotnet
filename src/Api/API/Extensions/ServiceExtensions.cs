@@ -91,8 +91,17 @@ public static class ServiceExtensions
             .AddEntityFrameworkStores<BlogDbContext>()
             .AddDefaultTokenProviders();
 
+        // services.AddDbContext<BlogDbContext>(options =>
+        //     options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
+        // );
+        //
+        DotNetEnv.Env.Load();
+        DotNetEnv.Env.TraversePath().Load();
+
+        // var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
         services.AddDbContext<BlogDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
+            options.UseNpgsql(connectionString)
         );
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
