@@ -30,7 +30,7 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # CMD ["sh", "-c", "dotnet ef database update --project /app/publish/Api.dll --startup-project /app/publish/Api.dll && dotnet Api.dll"]
-CMD ["sh", "-c", "dotnet ef database update --project /app/publish/Api.dll "]
+# CMD ["sh", "-c", "dotnet ef database update --project /app/publish/Api.dll "]
 
 ENTRYPOINT ["dotnet", "Api.dll"]
 
