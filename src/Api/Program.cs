@@ -1,5 +1,7 @@
 using API.Models;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -57,9 +59,10 @@ app.MapGet(
     )
     .WithName("GetWeatherForecast")
     .WithOpenApi();
+app.Run("http://0.0.0.0:8000");
 
-app.Run("http://localhost:8000"); // Change port here
-
+// app.Run("http://localhost:8000"); // Change port here
+// app.Run();
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
