@@ -62,6 +62,8 @@ app.MapGet(
 
 // app.Run("http://0.0.0.0:8000");
 
+app.Run("http://0.0.0.0:80");
+
 // app.Run("http://localhost:8000"); // Change port here
 app.Run();
 
