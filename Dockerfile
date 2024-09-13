@@ -7,9 +7,9 @@ FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS base
 
 USER app
 WORKDIR /app
-EXPOSE 8080
+# EXPOSE 8080
 # EXPOSE 8081
-EXPOSE 80
+# EXPOSE 80
 EXPOSE 8000
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -29,14 +29,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# CMD ["sh", "-c", "dotnet ef database update --project /app/publish/Api.dll --startup-project /app/publish/Api.dll && dotnet Api.dll"]
-# CMD ["sh", "-c", "dotnet ef database update --project /app/publish/Api.dll "]
-#
-# ENTRYPOINT ["dotnet", "Api.dll"]
-#
-
-
-CMD ["sh", "-c", "dotnet ef database update --project /app/publish/Api.dll && dotnet Api.dll"]
-
-
-
+# CMD ["sh", "-c", "dotnet ef database update --project /app/publish/Api.dll && dotnet Api.dll"]
+ENTRYPOINT ["dotnet", "Api.dll"]
