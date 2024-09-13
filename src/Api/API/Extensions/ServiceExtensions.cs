@@ -1,9 +1,8 @@
 using System.Text;
-using API.Models;
+
 using Core.Interfaces;
 using FluentValidation;
-using FluentValidation.AspNetCore;
-using Infrastructure;
+
 using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -106,6 +105,8 @@ public static class ServiceExtensions
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IPostService, PostService>();
+        services.AddScoped<ICommentService, CommentService>();
+
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<SieveProcessor>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
