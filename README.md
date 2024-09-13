@@ -10,92 +10,119 @@ This is a professional-grade blog backend API built with .NET 8, implementing be
 - **Entity Framework Core**: Uses EF Core for database operations.
 - **AutoMapper**: Efficiently maps between entities and DTOs.
 - **Swagger**: Integrated Swagger UI for API documentation and testing.
-
+- **SQLite**: Lightweight database for development and testing.
+- **PostgreSQL for Production**: Robust and scalable **PostgreSQL** database for production environments.
+- **Docker**: Supports containerization for seamless development, testing, and deployment.
+- **Azure Deployment**: Deployable to **Azure** for cloud hosting and scalability.
+- **CI/CD Pipeline**: Integrated **GitHub Actions** for automated CI/CD with Docker and Azure.
 ## Project Structure
 
 ```
+.
+├── Dockerfile
 ├── README.md
 ├── blog.sln
+├── old
 ├── src
-│   └── Api
-│       ├── API
-│       │   ├── Behaviors
-│       │   │   └── ValidationBehavior.cs
-│       │   ├── Controllers
-│       │   │   ├── AuthController.cs
-│       │   │   └── PostsController.cs
-│       │   ├── DTOs
-│       │   │   ├── CreatePostDto.cs
-│       │   │   ├── LoginRequestDTO.cs
-│       │   │   ├── LoginResponseDTO.cs
-│       │   │   ├── PagedResult.cs
-:│       │   │   ├── PostDto.cs
-│       │   │   ├── PostFilterDTO.cs
-│       │   │   ├── PostFilterDto.cs
-│       │   │   ├── RefreshTokenRequestDTO.cs
-│       │   │   ├── RegisterRequestDTO.cs
-│       │   │   └── UserFilterDTO.cs
-│       │   ├── Exceptions
-│       │   │   ├── ApiException.cs
-│       │   │   └── CustomExceptions.cs
-│       │   ├── Filters
-│       │   │   ├── NumberFilter.cs
-│       │   │   └── StringFilter.cs
-│       │   ├── MappingProfiles
-│       │   │   └── PostProfile.cs
-│       │   ├── Middlewares
-│       │   │   └── ExceptionHandlingMiddleware.cs
-│       │   ├── Models
-│       │   │   ├── AuthRequest.cs
-│       │   │   ├── RefreshTokenRequest.cs
-│       │   │   └── RegisterRequest.cs
-│       │   ├── Responses
-│       │   │   └── ApiResponse.cs
-│       │   └── Validators
-│       │       ├── AddPostValidator.cs
-│       │       ├── PostValidator.cs
-│       │       └── RegisterValidator.cs
-│       ├── Api.csproj
-│       ├── Core
-│       │   ├── Entities
-│       │   │   ├── Author.cs
-│       │   │   ├── Category.cs
-│       │   │   ├── Post.cs
-│       │   │   └── User.cs
-│       │   └── Interfaces
-│       │       ├── IPostService.cs
-│       │       ├── IRepository.cs
-│       │       └── IUserRepository.cs
-│       ├── Infrastructure
-│       │   ├── Data
-│       │   │   └── BlogDbContext.cs
-│       │   ├── Migrations
-│       │   │   ├── 20240820072758_InitialCreate.Designer.cs
-│       │   │   ├── 20240820072758_InitialCreate.cs
-│       │   │   └── BlogDbContextModelSnapshot.cs
-│       │   ├── Repositories
-│       │   │   ├── Repository.cs
-│       │   │   └── UserRepository.cs
-│       │   └── Services
-│       │       ├── PostService.cs
-│       │       └── TokenService.cs
-│       ├── Program.cs
-│       ├── Properties
-│       │   └── launchSettings.json
-│       ├── appsettings.Development.json
-│       ├── appsettings.json
-│       └── blog.db
+│   └── Api
+│       ├── API
+│       │   ├── Behaviors
+│       │   │   └── ValidationBehavior.cs
+│       │   ├── Controllers
+│       │   │   ├── Auth
+│       │   │   │   └── AuthController.cs
+│       │   │   ├── Posts
+│       │   │   │   ├── CommentsController.cs
+│       │   │   │   └── PostsController.cs
+│       │   │   └── Users
+│       │   ├── DTOs
+│       │   │   ├── Auth
+│       │   │   │   ├── LoginDto.cs
+│       │   │   │   ├── RegisterDto.cs
+│       │   │   │   └── TokenResponseDto.cs
+│       │   │   ├── PagedResult.cs
+│       │   │   ├── Posts
+│       │   │   │   ├── CommentDto.cs
+│       │   │   │   └── PostDto.cs
+│       │   │   └── Users
+│       │   │       └── UserDto.cs
+│       │   ├── Exceptions
+│       │   │   ├── ApiException.cs
+│       │   │   └── CustomExceptions.cs
+│       │   ├── Extensions
+│       │   │   └── ServiceExtensions.cs
+│       │   ├── Filters
+│       │   │   ├── NumberFilter.cs
+│       │   │   └── StringFilter.cs
+│       │   ├── MappingProfiles
+│       │   │   └── PostProfile.cs
+│       │   ├── Middlewares
+│       │   │   └── ExceptionHandlingMiddleware.cs
+│       │   ├── Models
+│       │   │   ├── AuthRequest.cs
+│       │   │   ├── RefreshTokenRequest.cs
+│       │   │   └── RegisterRequest.cs
+│       │   ├── Responses
+│       │   │   └── ApiResponse.cs
+│       │   └── Validators
+│       │       ├── LoginValidator.cs
+│       │       ├── PostValidator.cs
+│       │       └── RegisterValidator.cs
+│       ├── Api.csproj
+│       ├── Core
+│       │   ├── Entities
+│       │   │   ├── Posts
+│       │   │   │   ├── Comment.cs
+│       │   │   │   └── Post.cs
+│       │   │   └── Users
+│       │   │       └── IdentityUser.cs
+│       │   └── Interfaces
+│       │       ├── Auth
+│       │       │   └── IAuthService.cs
+│       │       ├── IRepository.cs
+│       │       ├── Posts
+│       │       │   ├── ICommentService.cs
+│       │       │   └── IPostService.cs
+│       │       └── Users
+│       │           └── IUserRepository.cs
+│       ├── Infrastructure
+│       │   ├── Data
+│       │   │   └── BlogDbContext.cs
+│       │   ├── Migrations
+│       │   │   ├── 20240907073400_InitialCreate.Designer.cs
+│       │   │   ├── 20240907073400_InitialCreate.cs
+│       │   │   ├── 20240907105720_AddDateOfBirthToApplicationUser.Designer.cs
+│       │   │   ├── 20240907105720_AddDateOfBirthToApplicationUser.cs
+│       │   │   └── BlogDbContextModelSnapshot.cs
+│       │   ├── Repositories
+│       │   │   ├── Repository.cs
+│       │   │   └── UserRepository.cs
+│       │   └── Services
+│       │       ├── Auth
+│       │       │   └── AuthService.cs
+│       │       ├── Posts
+│       │       │   ├── CommentService.cs
+│       │       │   └── PostService.cs
+│       │       ├── TokenService.cs
+│       │       └── Users
+│       ├── Program.cs
+│       ├── Properties
+│       │   └── launchSettings.json
+│       ├── appsettings.Development.json
+│       ├── appsettings.json
+│       └── blog.db
 └── tests
     └── Api.IntegrationTests
         ├── Api.IntegrationTests.csproj
         ├── GlobalUsings.cs
         ├── IntegrationTests
-        │   └── Controllers
-        │       ├── AuthControllerTests.cs
-        │       ├── CustomWebApplicationFactory.cs
-        │       ├── PostControllerTests.cs
-        │       └── PostsControllerIntegrationTests.cs
+        │   └── Controllers
+        │       ├── AuthControllerTests.cs
+        │       ├── CustomWebApplicationFactory.cs
+        │       ├── PostControllerTests.cs
+        │       └── PostsControllerIntegrationTests.cs
         └── UnitTest1.cs
+
 ```
 
 
